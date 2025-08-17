@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Calculadora de Sentimientos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #ffe6f0, #ffe);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* 🎉 Confeti animado */
+    body::before {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: radial-gradient(circle, #ffb3ba 5px, transparent 5px),
+                        radial-gradient(circle, #ffdfba 5px, transparent 5px),
+                        radial-gradient(circle, #ffffba 5px, transparent 5px),
+                        radial-gradient(circle, #baffc9 5px, transparent 5px),
+                        radial-gradient(circle, #bae1ff 5px, transparent 5px);
+      background-size: 100px 100px;
+      animation: move 10s linear infinite;
+      opacity: 0.5;
+      z-index: 0;
+    }
+
+    @keyframes move {
+      from {background-position: 0 0;}
+      to {background-position: 100px 100px;}
+    }
+
+    /* 📱 Calculadora */
+    .calculator {
+      background: #ffb6c1;
+      padding: 20px;
+      border-radius: 20px;
+      width: 280px;
+      box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+      text-align: center;
+      z-index: 1;
+    }
+
+    .brand {
+      font-weight: bold;
+      color: #fff;
+      margin-bottom: 8px;
+      text-align: left;
+    }
+
+    .screen {
+      background: #fff;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      padding: 15px;
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 15px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .buttons-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      background: #f8cdda;
+      border: none;
+      border-radius: 6px;
+      padding: 12px;
+      font-size: 16px;
+      cursor: default;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .next-btn {
+      background: #4da6ff;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-size: 18px;
+      color: #fff;
+      cursor: pointer;
+      transition: 0.3s;
+      animation: blink 1s infinite alternate;
+    }
+
+    .next-btn:hover {
+      background: #1a8cff;
+    }
+
+    @keyframes blink {
+      from {opacity: 1;}
+      to {opacity: 0.6;}
+    }
+
+    /* Ocultar preguntas al inicio */
+    .question {
+      display: none;
+      text-align: center;
+      z-index: 1;
+    }
+
+    .options button {
+      margin: 8px;
+      padding: 10px 15px;
+      border-radius: 8px;
+      border: none;
+      background: #ff99cc;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .options button:hover {
+      background: #ff66b2;
+    }
+
+    /* Selector de valor */
+    .value-selector {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 15px 0;
+    }
+
+    .value-box {
+      font-size: 22px;
+      padding: 8px 15px;
+      border: 2px solid #ff99cc;
+      border-radius: 8px;
+      background: white;
+      width: 50px;
+      text-align: center;
+    }
+
+    .arrow-btn {
+      background: #ff99cc;
+      border: none;
+      color: white;
+      font-size: 20px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Pantalla inicial con calculadora -->
+  <div class="calculator" id="calculator">
+    <div class="brand">Manuel</div>
+    <div class="screen">Vamos a calcular tus sentimientos</div>
+    <div class="buttons-grid">
+      <button class="btn">7</button>
+      <button class="btn">8</button>
+      <button class="btn">9</button>
+      <button class="btn">÷</button>
+      <button class="btn">4</button>
+      <button class="btn">5</button>
+      <button class="btn">6</button>
+      <button class="btn">×</button>
+      <button class="btn">1</button>
+      <button class="btn">2</button>
+      <button class="btn">3</button>
+      <button class="btn">-</button>
+      <button class="btn">0</button>
+      <button class="btn">.</button>
+      <button class="btn">=</button>
+      <button class="btn">+</button>
+    </div>
+    <button class="next-btn" onclick="startQuestions()">Siguiente</button>
+  </div>
+
+  <!-- Preguntas -->
+  <div class="question" id="q1">
+    <h2>¿Cómo te sientes?</h2>
+    <div class="options">
+      <button onclick="nextQuestion('muy feliz')">Muy feliz</button>
+      <button onclick="nextQuestion('feliz')">Feliz</button>
+      <button onclick="nextQuestion('mas o menos')">Más o menos</button>
+      <button onclick="nextQuestion('triste')">No me siento feliz / Estoy triste</button>
+    </div>
+  </div>
+
+  <div class="question" id="q2"></div>
+
+  <div class="question" id="q3">
+    <h2>¿Ya comiste?</h2>
+    <div class="options">
+      <button onclick="eatAnswer('si')">Sí</button>
+      <button onclick="eatAnswer('no')">No</button>
+    </div>
+  </div>
+
+  <div class="question" id="q4">
+    <h2>Del 1 al 10 ¿Cuánto crees que vales?</h2>
+    <div class="value-selector">
+      <button class="arrow-btn" onclick="changeValue(-1)">⬇</button>
+      <div class="value-box" id="valueBox">5</div>
+      <button class="arrow-btn" onclick="changeValue(1)">⬆</button>
+    </div>
+    <button class="next-btn" onclick="finish()">Siguiente</button>
+  </div>
+
+  <div class="question" id="finalMsg"></div>
+
+  <script>
+    const calculator = document.getElementById("calculator");
+    const q1 = document.getElementById("q1");
+    const q2 = document.getElementById("q2");
+    const q3 = document.getElementById("q3");
+    const q4 = document.getElementById("q4");
+    const finalMsg = document.getElementById("finalMsg");
+
+    function startQuestions(){
+      calculator.style.display = "none";
+      q1.style.display = "block";
+    }
+
+    function nextQuestion(feeling){
+      q1.style.display = "none";
+      if(feeling === "mas o menos" || feeling === "triste"){
+        q2.innerHTML = "<h2>Recuerda que eres una persona maravillosa y tu día va a mejorar ❤️ ¡Ánimos!</h2><button class='next-btn' onclick='goToEat()'>Siguiente</button>";
+      } else {
+        q2.innerHTML = "<h2>¡Qué alegría verte feliz! 🌸</h2><button class='next-btn' onclick='goToEat()'>Siguiente</button>";
+      }
+      q2.style.display = "block";
+    }
+
+    function goToEat(){
+      q2.style.display = "none";
+      q3.style.display = "block";
+    }
+
+    function eatAnswer(answer){
+      q3.innerHTML = '';
+      const msg = document.createElement('h2');
+      if(answer === 'si'){
+        msg.innerText = '¡Provechito! 😋 Que tengas un bonito día 🌸';
+      } else {
+        msg.innerText = '¡Pues come! ¿Qué esperas? 🍽️';
+      }
+      q3.appendChild(msg);
+
+      const nextBtn = document.createElement('button');
+      nextBtn.innerText = 'Siguiente';
+      nextBtn.className = 'next-btn';
+      nextBtn.onclick = () => {
+        q3.style.display = 'none';
+        q4.style.display = 'block';
+      }
+      q3.appendChild(nextBtn);
+    }
+
+    function changeValue(change){
+      let value = parseInt(document.getElementById("valueBox").innerText);
+      value += change;
+      if(value < 1) value = 1;
+      if(value > 10) value = 10;
+      document.getElementById("valueBox").innerText = value;
+    }
+
+    function finish(){
+      q4.style.display = "none";
+      finalMsg.innerHTML = "<h2>¡Vales 100000000 ❤️ Suerteeee!</h2>";
+      finalMsg.style.display = "block";
+    }
+  </script>
+</body>
+</html>
